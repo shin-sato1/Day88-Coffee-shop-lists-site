@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %} Cafe Information {% endblock %}
+
+{% block content %}
+  <div class="container py-5">
+      <div class="row row-cols-1 row-cols-md-3 g-4">
+        {% for cafe in cafe_info%}
+        <div class="col">
+          <div class="card h-100">
+            <img src="{{cafe.img_url}}" class="card-img-top" alt="..." />
+            <div class="card-body">
+              <h5 class="card-title">{{ cafe.name }}</h5>
+              <p class="card-text">
+                <ul>
+                  <li>location:&nbsp; {{ cafe.location }}<a href="{{ cafe.map_url }}" class="ms-2">map</a></li>
+                  <li>Price:&nbsp; {{ cafe.coffee_price }}</li>
+                  <li>Seat:&nbsp; {{ cafe.seats }}</li>
+
+                  {% if cafe.has_sockets %}
+                    <li class="yes">Sockets:&nbsp; Yes</li>
+                  {% else %}
+                    <li class="no">Sockets:&nbsp; No</li>
+                  {% endif %}
+
+                  {% if cafe.has_toilet %}
+                    <li class="yes">Tolilet:&nbsp; Yes</li>
+                  {% else %}
+                    <li class="no">Toilet:&nbsp; No</li>
+                  {% endif %}
+
+                  {% if cafe.has_wifi %}
+                    <li class="yes">Wifi:&nbsp; Yes</li>
+                  {% else %}
+                    <li class="no">Wifi:&nbsp; No</li>
+                  {% endif %}
+                </ul>
+
+                <button>edit</button>
+              </p>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+{% endblock %}
+
