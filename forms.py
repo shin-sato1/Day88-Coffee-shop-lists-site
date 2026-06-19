@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField,SubmitField,SelectField
-from wtforms.validators import DataRequired,URL,InputRequired
+from wtforms import StringField,SubmitField,SelectField,PasswordField
+from wtforms.validators import DataRequired,URL,InputRequired,Email
 
-class Addform(FlaskForm):
+class AddForm(FlaskForm):
     cafe_name = StringField('Cafe name',validators=[DataRequired()])
     location = StringField('Cafe Location',validators=[DataRequired()])
     coffee_price = StringField('Cafe Price',validators=[DataRequired()])
@@ -14,4 +14,16 @@ class Addform(FlaskForm):
     calls =  SelectField('Call Y/N',validators=[InputRequired()],choices=[('True','Yes'),('False','No')])
     seats =  SelectField('Seat Y/N',validators=[InputRequired()],choices=[('True','Yes'),('False','No')])
     submit = SubmitField('Submit')
+
+class RegisterForm(FlaskForm):
+    name = StringField('Name',validators=[DataRequired()])
+    email = StringField('Email',validators=[DataRequired(),Email()])
+    password = StringField('Password',validators=[DataRequired()])
+    submit = SubmitField('Sign Up')
+
+class LoginForm(FlaskForm):
+    email = StringField('Email',validators=[DataRequired(),Email()])
+    password = PasswordField('Password',validators=[DataRequired()])
+    submit = SubmitField('submit')
+
 
