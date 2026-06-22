@@ -1,7 +1,7 @@
 import os
 from dotenv import load_dotenv
 from datetime import datetime
-from flask import Flask,render_template,request,redirect,url_for
+from flask import Flask,render_template,request,redirect,url_for,abort,flash
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
@@ -10,6 +10,7 @@ from sqlalchemy.orm import Mapped, mapped_column
 from forms import AddForm, RegisterForm, LoginForm
 from flask_login import LoginManager,UserMixin,login_user,current_user,logout_user
 from werkzeug.security import generate_password_hash, check_password_hash
+from functools import wraps
 
 
 load_dotenv()
@@ -66,6 +67,16 @@ login_manager.init_app(app)
 def load_user(user_id):
     return db.session.get(User,int(user_id))
 
+#ログインした人だけが編集できるようにする。decolater
+def login_member_only(f):
+    @wraps(f)
+    def decorated_function(*args,**kwargs):
+        if not current_user.is_authenticated:
+            abort(401)
+        else:
+            return f(*args,**kwargs)
+    return decorated_function
+
 @app.context_processor
 def inject():
     return{
@@ -89,6 +100,10 @@ def cafe():
 
 @app.route('/add',methods=['GET','POST'])
 def add():
+    if not current_user.is_authenticated:
+        flash(message='Please create an account to add or edit cafe information',category='error')
+        return redirect(url_for('register'))
+
     form = AddForm()
     if form.validate_on_submit():
         name = form.cafe_name.data
@@ -124,6 +139,7 @@ def add():
 
 #edit機能とdelete機能をつけたい
 @app.route('/delete/<int:cafe_id>',methods=['GET','POST'])
+@login_member_only
 def delete(cafe_id):
     cafe_to_delete = db.get_or_404(Cafe,cafe_id)
     delete_form = AddForm(
@@ -147,6 +163,7 @@ def delete(cafe_id):
     return render_template('add.html',form=delete_form,is_delete=True)
 
 @app.route('/edit/<int:cafe_id>',methods=['GET','POST'])
+@login_member_only
 def edit(cafe_id):
     cafe_info = db.get_or_404(Cafe,cafe_id)
     cafe_form = AddForm(
@@ -222,19 +239,28 @@ def login():
         ).scalar()
 
         if not check_login_user:
+            flash(message='That email does not exsit, Please try again',category='error')
             return redirect(url_for('login'))
-        
-        check_password = check_password_hash(
-            pwhash = check_login_user.password,
-            password = password
-        )
 
-        if check_password:
-            login_user(check_login_user)
-            return redirect(url_for('home'))
-        
         else:
-            return redirect(url_for('login'))
+            check_password = check_password_hash(
+                pwhash = check_login_user.password,
+                password = password
+            )
+            if not check_password:
+                flash(message='Password incorrect, Please try again',category='error')
+                return redirect(url_for('login'))
+            
+            else:
+                login_user(check_login_user)
+
+        #flashでエラーメッセージを出すようにしたので、不要になった
+        # if check_password:
+        #     login_user(check_login_user)
+        #     return redirect(url_for('home'))
+        
+        # else:
+        #     return redirect(url_for('login'))
         
     return render_template('login.html',form=form)
 

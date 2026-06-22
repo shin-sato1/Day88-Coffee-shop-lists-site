@@ -35,9 +35,10 @@
                     <li class="no">Wifi:&nbsp; No</li>
                   {% endif %}
                 </ul>
-
+                {% if current_user.is_authenticated %}
                 <a class="btn btn-primary" href="{{ url_for('edit',cafe_id = cafe.id) }}" role="button">Edit</a>
                 <a class="btn btn-danger" href="{{ url_for('delete',cafe_id = cafe.id) }}" role="button">Delete</a>
+                {% endif %}
               </p>
             </div>
           </div>

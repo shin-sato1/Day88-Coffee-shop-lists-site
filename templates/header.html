@@ -28,6 +28,10 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('cafe') }}">Cafes</a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('add') }}">Add
+              </a>
+            </li>
             
             {% if not current_user.is_authenticated %}
             <li class="nav-item">
@@ -37,10 +41,6 @@
               <a class="nav-link" href="{{ url_for('login') }}">Login</a>
             </li>
             {% else %}
-            <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('add') }}">Add
-              </a>
-            </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('logout') }}">Log Out</a>
             </li>
