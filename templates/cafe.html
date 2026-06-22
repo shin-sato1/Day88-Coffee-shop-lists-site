@@ -36,7 +36,7 @@
                   {% endif %}
                 </ul>
 
-                <a class="btn btn-primary" href="#" role="button">Edit</a>
+                <a class="btn btn-primary" href="{{ url_for('edit',cafe_id = cafe.id) }}" role="button">Edit</a>
                 <a class="btn btn-danger" href="{{ url_for('delete',cafe_id = cafe.id) }}" role="button">Delete</a>
               </p>
             </div>

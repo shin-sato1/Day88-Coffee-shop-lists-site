@@ -72,9 +72,13 @@ def inject():
         'current_year': datetime.now().year,
     }
 
+#first page
 @app.route('/')
 def home():
-    return render_template('index.html')
+    cafe_latest_info = db.session.execute(db.select(Cafe.name).order_by(Cafe.id)).scalars().all()
+    # for item in cafe_latest_info[-5:]:
+    #     print(item)
+    return render_template('index.html',latest_post=cafe_latest_info)
 
 
 @app.route('/cafes')
@@ -90,13 +94,13 @@ def add():
         name = form.cafe_name.data
         location = form.location.data
         price = form.coffee_price.data
+        seat = form.seats.data
         map_url = form.map_url.data
         img_url = form.img_url.data
         socket = form.sockets.data == 'True'
         toilet = form.toilets.data == 'True'
         wifi = form.wifis.data == 'True'
         call = form.calls.data == 'True'
-        seat = form.seats.data == 'True'
 
         
         new_cafe = Cafe(
@@ -119,14 +123,60 @@ def add():
     return render_template('add.html',form=form)
 
 #edit機能とdelete機能をつけたい
-@app.route('/delete/<int:cafe_id>')
+@app.route('/delete/<int:cafe_id>',methods=['GET','POST'])
 def delete(cafe_id):
     cafe_to_delete = db.get_or_404(Cafe,cafe_id)
-    db.session.delete(cafe_to_delete)
-    db.session.commit()
-    return redirect(url_for('home'))
+    delete_form = AddForm(
+        cafe_name = cafe_to_delete.name,
+        location = cafe_to_delete.location,
+        coffee_price = cafe_to_delete.coffee_price,
+        map_url = cafe_to_delete.map_url,
+        img_url = cafe_to_delete.img_url,
+        sockets = cafe_to_delete.has_sockets,
+        toilets =  cafe_to_delete.has_toilet,
+        wifis =  cafe_to_delete.has_wifi,
+        calls =  cafe_to_delete.can_take_calls,
+        seats =  cafe_to_delete.seats,
+    )
+    delete_form.submit.label.text = "Delete"
 
+    if delete_form.validate_on_submit():
+        db.session.delete(cafe_to_delete)
+        db.session.commit()
+        return redirect(url_for('cafe'))
+    return render_template('add.html',form=delete_form,is_delete=True)
 
+@app.route('/edit/<int:cafe_id>',methods=['GET','POST'])
+def edit(cafe_id):
+    cafe_info = db.get_or_404(Cafe,cafe_id)
+    cafe_form = AddForm(
+        cafe_name = cafe_info.name,
+        location = cafe_info.location,
+        coffee_price = cafe_info.coffee_price,
+        map_url = cafe_info.map_url,
+        img_url = cafe_info.img_url,
+        sockets = cafe_info.has_sockets,
+        toilets =  cafe_info.has_toilet,
+        wifis =  cafe_info.has_wifi,
+        calls =  cafe_info.can_take_calls,
+        seats =  cafe_info.seats,
+    )
+
+    if cafe_form.validate_on_submit():
+        cafe_info.name = cafe_form.cafe_name.data
+        cafe_info.location = cafe_form.location.data
+        cafe_info.coffee_price = cafe_form.coffee_price.data
+        cafe_info.seats = cafe_form.seats.data
+        cafe_info.map_url = cafe_form.map_url.data
+        cafe_info.img_url = cafe_form.img_url.data
+        cafe_info.has_sockets = cafe_form.sockets.data == 'True'
+        cafe_info.has_toilet = cafe_form.toilets.data == 'True'
+        cafe_info.has_wifi = cafe_form.wifis.data == 'True'
+        cafe_info.can_take_calls = cafe_form.calls.data == 'True'
+
+        db.session.commit()
+        return redirect(url_for('cafe'))
+    return render_template('add.html',form=cafe_form,is_edit=True)
 
 
 #ログイン機能をつけたい。

@@ -26,3 +26,32 @@ img {
 .navbar-collapse {
     padding-left: 20px;
 }
+
+.ticker {
+    background-color: #6e5203;
+    color: white;
+    padding: 10px 0;
+    overflow: hidden;
+}
+
+.overflow-hidden {
+    width: 100%;
+    overflow: hidden;
+}
+
+.scroll-text {
+    padding-left: 100%;
+    white-space: nowrap;
+    display: inline-block;
+    animation: scroll 40s linear infinite;
+}
+
+@keyframes scroll {
+    from {
+        transform: translateX(10%);
+    }
+
+    to {
+        transform: translateX(-100%);
+    }
+}

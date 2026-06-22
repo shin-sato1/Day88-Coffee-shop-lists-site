@@ -3,6 +3,17 @@
 
 {%block content%}
 
+    <!-- ☕ Welcome to Day88 Cafe! Enjoy our fresh coffee. -->
+<div class="ticker">
+  <div class="scroll-text">
+    ☕ Latest Posted Cafe ☕ :&nbsp;
+    {% for cafe in latest_post[-5:] %}
+    {{ cafe }}
+    &emsp;
+    {% endfor %}
+  </div>
+</div>
+
 <div class="px-4 pt-2 my-4 text-center border-bottom">
   <h1 class="display-4 fw-bold text-body-emphasis">Coffee shop lists</h1>
   <div class="col-lg-6 mx-auto">

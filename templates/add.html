@@ -3,8 +3,14 @@
 
 <div class="px-4 pt-2 my-4">
   <div class="text-center">
+    {% if is_delete %}
+    <h2>Really Delete ?</h2>
+    {% elif is_edit %}
+    <h2>Edit a coffee shop</h2>
+    {% else %}
     <h2>Add a coffee shop</h2>
     <h4>Please enter the coffee shop details blow</h4>
+    {% endif %}
   </div>
   <div class="col-md-7 col-lg-8 mx-auto mt-5">
     <!-- {% if form.errors %}
@@ -14,7 +20,48 @@
   {% endif %} -->
 
     <!-- これだけ書けば、エラー自動で表示してくれる -->
-    {{ render_form(form,novalidate=True) }}
+    <!-- {{ render_form(form,novalidate=True) }} -->
+
+    <form method="POST" novalidate>
+      {{ form.hidden_tag() }}
+      {% for field in [form.cafe_name, form.location, form.coffee_price,
+      form.seats, form.map_url, form.img_url] %}
+        <div class="mb-3">
+          {{ field.label(class="form-label") }}
+          {{ field(class="form-control") }}
+
+          <!-- エラー表示 -->
+          {% for error in field.errors %}
+          <div class="text-danger">
+            {{ error }}
+          </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      {% for field in [form.sockets, form.toilets, form.wifis,
+      form.calls] %}
+        <div class="mb-3">
+          {{ field.label(class="form-label") }}
+          {{ field(class="form-select") }}
+          
+          <!-- エラー表示 -->
+          {% for error in field.errors %}
+          <div class="text-danger">
+            {{ error }}
+          </div>
+          {% endfor %}
+        </div>
+      {% endfor %}
+
+      <div class="mb-3">
+        {% if is_delete %}
+        {{ form.submit(class="btn btn-danger") }}
+        {% else %}
+        {{ form.submit(class="btn btn-primary") }}
+        {% endif %}
+      </div>
+    </form>
   </div>
 </div>
 {% endblock %}
